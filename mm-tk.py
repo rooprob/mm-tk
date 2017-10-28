@@ -27,6 +27,8 @@ class SidePanel():
         self.panel = Tk.Frame(root)
         self.panel.pack(side=Tk.LEFT, fill=Tk.BOTH, expand=1)
 
+        self.clearBtn = Tk.Button(self.panel, text='Clear')
+        self.clearBtn.pack(side='top', fill=Tk.BOTH)
         self.openBtn = Tk.Button(self.panel, text='Open file ...')
         self.openBtn.pack(side='top', fill=Tk.BOTH)
         self.saveBtn = Tk.Button(self.panel, text='Save')
@@ -50,6 +52,7 @@ class Controller():
         self.root = Tk.Tk()
         self.model = Model()
         self.view = View(self.root)
+        self.view.sidepanel.clearBtn.bind('<Button>', self.clear_state)
         self.view.sidepanel.openBtn.bind('<Button>', self.show_file_open)
         self.view.sidepanel.saveBtn.bind('<Button>', self.show_file_save)
         self.view.sidepanel.quitBtn.bind('<Button>', self.confirm_quit)
@@ -61,7 +64,6 @@ class Controller():
         self.root.deiconify()
         self.root.mainloop()
 
-
     def load_state(self, fname):
         with open(fname) as fh:
             d = json.load(fh)
@@ -72,6 +74,11 @@ class Controller():
                 self.fname = os.path.basename(fname)
                 self.canvas_clear()
                 self.canvas_draw_all_points(self.points)
+
+    def clear_state(self, event):
+        self.points = list()
+        self.canvas_clear()
+        self.need_save = False
 
     def save_state(self, fname):
         with open(fname, 'w') as fh:
